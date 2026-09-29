@@ -1,0 +1,36 @@
+name: NFL Betting Model ETL
+
+on:
+  workflow_dispatch:
+
+  schedule:
+    - cron: "15 10 * * 2"
+      timezone: "America/Chicago"
+
+jobs:
+
+  update:
+
+    runs-on: ubuntu-latest
+
+    timeout-minutes: 30
+
+    steps:
+
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: "pip"
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Run NFL ETL
+        env:
+          APPS_SCRIPT_WEB_APP_URL: ${{ secrets.APPS_SCRIPT_WEB_APP_URL }}
+          ETL_SHARED_SECRET: ${{ secrets.ETL_SHARED_SECRET }}
+        run: python main.py
